@@ -5,8 +5,6 @@ description: Use when working with Schema Registry for Apache Kafka, Confluent P
 
 # Schema Registry Skill
 
-Schema Registry is a centralized repository for managing and validating schemas for Kafka topic message data. It provides schema storage, versioning, compatibility enforcement, and serialization/deserialization support for Avro, Protobuf, and JSON Schema formats.
-
 ## When to Read Reference Files
 
 This skill uses progressive disclosure. Read the appropriate reference file based on the user's question:
@@ -22,14 +20,6 @@ This skill uses progressive disclosure. Read the appropriate reference file base
 If the question spans multiple areas, read multiple reference files.
 
 ## Core Concepts (Quick Reference)
-
-### What Schema Registry Does
-
-- Stores and retrieves Avro, Protobuf, and JSON Schema definitions
-- Assigns globally unique IDs to each registered schema
-- Enforces compatibility rules when schemas evolve
-- Provides serializers/deserializers that embed schema IDs in Kafka messages
-- Uses a compacted Kafka topic (`_schemas`) as its backend store
 
 ### Key Terminology
 
@@ -122,6 +112,38 @@ CREATE TABLE users (
   'value.avro-confluent.url' = 'http://localhost:8081'
 );
 ```
+
+## Schema Evolution Workflow
+
+Schema evolution is potentially breaking — always follow this sequence:
+
+**Step 1 — Test compatibility before registering:**
+```bash
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schema": "<new-schema-json>"}' \
+  http://localhost:8081/compatibility/subjects/my-topic-value/versions/latest
+```
+- Response `{"is_compatible":true}` → proceed to Step 2.
+- Response `{"is_compatible":false}` or HTTP 409 → review the error message, adjust the schema (e.g., add missing defaults, use a union type, or remove the breaking field change), then re-test before continuing.
+
+**Step 2 — Register the new schema version:**
+```bash
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schema": "<new-schema-json>"}' \
+  http://localhost:8081/subjects/my-topic-value/versions
+```
+Note the returned `id` for verification.
+
+**Step 3 — Verify registration:**
+```bash
+# Confirm the new version is present and the ID matches
+curl http://localhost:8081/subjects/my-topic-value/versions/latest
+```
+
+**Step 4 — Deploy consumers/producers in the correct order:**
+- **BACKWARD**: deploy consumers first, then producers.
+- **FORWARD**: deploy producers first, then consumers.
+- **FULL**: any order.
 
 ## Deployment Options
 
