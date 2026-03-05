@@ -13,4 +13,4 @@ jobs:
       - uses: tesslio/publish@main
         with:
           path: schema-registry-tile
-          api-key: ${{ secrets.TESSL_API_KEY }}
+          token: ${{ secrets.TESSL_API_KEY }}
