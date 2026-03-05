@@ -1,0 +1,12 @@
+{
+  "name": "gamussa/schema-registry",
+  "version": "0.1.0",
+  "summary": "Schema Registry for Apache Kafka - covers schema management (Avro, Protobuf, JSON Schema), compatibility modes, schema evolution, REST API, serializer/deserializer configuration, Kafka Connect converters, Flink SQL integration, and Confluent Cloud.",
+  "private": true,
+  "docs": "docs/index.md",
+  "skills": {
+    "schema-registry": {
+      "path": "skills/schema-registry/SKILL.md"
+    }
+  }
+}
