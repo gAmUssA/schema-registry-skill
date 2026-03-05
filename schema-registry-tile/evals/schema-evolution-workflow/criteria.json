@@ -1,0 +1,61 @@
+{
+  "context": "Tests whether the agent correctly follows the schema evolution workflow: compatibility check before registering, correct Avro optional field syntax, registration and verification steps, and correct deployment ordering for BACKWARD compatibility.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "Compatibility check first",
+      "max_score": 12,
+      "description": "The evolve.sh script POSTs to a /compatibility/ endpoint before POSTing to /subjects/{subject}/versions to register the schema"
+    },
+    {
+      "name": "Correct compatibility URL",
+      "max_score": 8,
+      "description": "The compatibility check targets /compatibility/subjects/user-profiles-value/versions/latest (or /versions)"
+    },
+    {
+      "name": "Schema registration step",
+      "max_score": 8,
+      "description": "The script POSTs the new schema to /subjects/user-profiles-value/versions after the compatibility check"
+    },
+    {
+      "name": "Verification step",
+      "max_score": 8,
+      "description": "The script retrieves the latest registered version (GET /subjects/user-profiles-value/versions/latest or similar) after registering"
+    },
+    {
+      "name": "Correct Content-Type header",
+      "max_score": 8,
+      "description": "All curl requests in evolve.sh use the header `Content-Type: application/vnd.schemaregistry.v1+json`"
+    },
+    {
+      "name": "Optional field union type",
+      "max_score": 10,
+      "description": "Both new optional fields in v2_schema.json use an Avro union type starting with null, e.g. [\"null\", \"string\"]"
+    },
+    {
+      "name": "Default value is null",
+      "max_score": 10,
+      "description": "Both new optional fields have `\"default\": null` (matching the first type in the union)"
+    },
+    {
+      "name": "BACKWARD deployment order",
+      "max_score": 12,
+      "description": "deploy_order.txt (or the script output) states that consumers should be updated/deployed BEFORE producers"
+    },
+    {
+      "name": "Compatible change only",
+      "max_score": 8,
+      "description": "v2_schema.json does NOT add any required fields without defaults (all new fields have defaults)"
+    },
+    {
+      "name": "Script is self-contained",
+      "max_score": 8,
+      "description": "evolve.sh uses the Schema Registry URL http://localhost:8081 from inputs (not a placeholder) and the subject user-profiles-value"
+    },
+    {
+      "name": "Schema Registry base URL used correctly",
+      "max_score": 8,
+      "description": "The script targets http://localhost:8081 as the base URL for all API calls (not another port or path)"
+    }
+  ]
+}

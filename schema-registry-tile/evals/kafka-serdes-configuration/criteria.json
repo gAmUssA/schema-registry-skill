@@ -1,0 +1,61 @@
+{
+  "context": "Tests whether the agent uses correct Confluent serializer class names, includes the Confluent Maven repository, configures specific Avro record deserialization, uses the correct subject naming strategy class paths, and writes valid Avro optional field syntax.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "KafkaAvroSerializer class",
+      "max_score": 8,
+      "description": "ProducerConfig.java references `io.confluent.kafka.serializers.KafkaAvroSerializer` as the value serializer class"
+    },
+    {
+      "name": "KafkaAvroDeserializer class",
+      "max_score": 8,
+      "description": "ConsumerConfig.java references `io.confluent.kafka.serializers.KafkaAvroDeserializer` as the value deserializer class"
+    },
+    {
+      "name": "schema.registry.url set",
+      "max_score": 8,
+      "description": "Both ProducerConfig.java and ConsumerConfig.java set the `schema.registry.url` property"
+    },
+    {
+      "name": "specific.avro.reader=true",
+      "max_score": 12,
+      "description": "ConsumerConfig.java sets `specific.avro.reader` to `true` (enabling deserialization into generated specific record classes)"
+    },
+    {
+      "name": "RecordNameStrategy class path",
+      "max_score": 10,
+      "description": "ProducerConfig.java sets `value.subject.name.strategy` to `io.confluent.kafka.serializers.subject.RecordNameStrategy`"
+    },
+    {
+      "name": "Confluent Maven repository",
+      "max_score": 8,
+      "description": "pom.xml includes the Confluent repository with URL `https://packages.confluent.io/maven/`"
+    },
+    {
+      "name": "kafka-avro-serializer dependency",
+      "max_score": 8,
+      "description": "pom.xml includes a dependency on `kafka-avro-serializer` (groupId io.confluent)"
+    },
+    {
+      "name": "Avro Maven plugin included",
+      "max_score": 6,
+      "description": "pom.xml includes the avro-maven-plugin (groupId org.apache.avro) configured for schema code generation"
+    },
+    {
+      "name": "Optional field union type",
+      "max_score": 10,
+      "description": "The `notes` field in ParcelScanEvent.avsc uses a union type starting with null, e.g. [\"null\", \"string\"]"
+    },
+    {
+      "name": "Default null for optional field",
+      "max_score": 10,
+      "description": "The `notes` field has `\"default\": null` matching the first type in the union"
+    },
+    {
+      "name": "RecordNameStrategy explanation",
+      "max_score": 12,
+      "description": "design_notes.md explains that RecordNameStrategy scopes the subject by record name (not topic), making it suitable when multiple event types share a topic"
+    }
+  ]
+}

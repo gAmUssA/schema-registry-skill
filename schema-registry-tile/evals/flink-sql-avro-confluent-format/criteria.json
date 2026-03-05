@@ -1,0 +1,61 @@
+{
+  "context": "Tests whether the agent uses the correct avro-confluent format (not plain avro) for Flink SQL Schema Registry integration, specifies the correct URL option, includes the right Maven dependencies and repository, and correctly configures key/value field disambiguation.",
+  "type": "weighted_checklist",
+  "checklist": [
+    {
+      "name": "avro-confluent format used",
+      "max_score": 12,
+      "description": "pipeline.sql uses 'avro-confluent' as the value.format (not 'avro' or 'json') for the orders and customers tables"
+    },
+    {
+      "name": "avro-confluent.url option",
+      "max_score": 12,
+      "description": "The avro-confluent format in pipeline.sql uses the option `value.avro-confluent.url` (or `key.avro-confluent.url`) — NOT `schema.registry.url`"
+    },
+    {
+      "name": "flink-avro-confluent-registry dep",
+      "max_score": 10,
+      "description": "pom.xml includes a dependency on `flink-avro-confluent-registry` (groupId org.apache.flink)"
+    },
+    {
+      "name": "flink-avro dependency",
+      "max_score": 8,
+      "description": "pom.xml includes a dependency on `flink-avro` (groupId org.apache.flink)"
+    },
+    {
+      "name": "Confluent Maven repo",
+      "max_score": 8,
+      "description": "pom.xml declares the Confluent repository `https://packages.confluent.io/maven/`"
+    },
+    {
+      "name": "EXCEPT_KEY for value fields",
+      "max_score": 10,
+      "description": "The orders table definition uses `'value.fields-include' = 'EXCEPT_KEY'` to exclude the key field from the value"
+    },
+    {
+      "name": "key.fields-prefix for key disambiguation",
+      "max_score": 8,
+      "description": "The orders table (with avro-confluent key) uses `key.fields-prefix` to distinguish key columns from value columns"
+    },
+    {
+      "name": "Explicit key/value subjects",
+      "max_score": 8,
+      "description": "The orders table specifies both `key.avro-confluent.subject` = 'orders-key' and `value.avro-confluent.subject` = 'orders-value'"
+    },
+    {
+      "name": "Upsert-kafka connector for customers",
+      "max_score": 8,
+      "description": "The customers table uses the 'upsert-kafka' connector (not plain 'kafka') since it has upsert semantics"
+    },
+    {
+      "name": "Raw key for customers",
+      "max_score": 8,
+      "description": "The customers table uses `'key.format' = 'raw'` for the customer_id key"
+    },
+    {
+      "name": "Schema Registry URL used correctly",
+      "max_score": 8,
+      "description": "All avro-confluent.url values in pipeline.sql point to http://schema-registry:8081 (matching the given endpoint)"
+    }
+  ]
+}
